@@ -662,3 +662,56 @@ footer {
         transition-duration: .01ms !important;
     }
 }
+/* Full-screen intro animation */
+#intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #0b3470, #020817 75%);
+    color: white;
+    text-align: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#intro-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content h1 {
+    font-size: clamp(28px, 6vw, 55px);
+    font-weight: 800;
+    letter-spacing: 5px;
+    color: #ffffff;
+    text-shadow: 0 0 20px #087ff5, 0 0 40px #087ff5;
+    animation: introGlow 1.5s infinite alternate;
+}
+
+.intro-content p {
+    color: #8fcaff;
+    letter-spacing: 3px;
+    margin-top: 12px;
+}
+
+.loader {
+    width: 35px;
+    height: 35px;
+    margin: 30px auto;
+    border: 3px solid #29466d;
+    border-top: 3px solid #00a9e8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes introGlow {
+    from { text-shadow: 0 0 10px #087ff5; }
+    to { text-shadow: 0 0 30px #00a9e8, 0 0 50px #087ff5; }
+}
