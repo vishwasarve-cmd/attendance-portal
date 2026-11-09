@@ -7,13 +7,11 @@
 
 /* 1. GOOGLE FORM URL */
 
-// IMPORTANT:
-// Paste your actual Google Form RESPONDER LINK here.
-// Use the link ending in /viewform.
-// Do not use the Google Form editing link.
+// Use your actual Google Form responder link.
+// Keep the URL inside quotation marks.
 
 const GOOGLE_FORM_URL =
-    "https://docs.google.com/forms/d/e/1FAIpQLSc-cfIUEYMQmZn-Eh-Ri-_ZSc3CHdN3ftb-hXa2_n7UTAmybQ/viewform?usp=dialog"
+    "https://docs.google.com/forms/d/e/1FAIpQLSc-cfIUEYMQmZn-Eh-Ri-_ZSc3CHdN3ftb-hXa2_n7UTAmybQ/viewform?usp=dialog";
 
 
 /* 2. HTML ELEMENTS */
@@ -22,21 +20,33 @@ const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
 const preview = document.getElementById("photoPreview");
 
+const cameraPlaceholder =
+    document.getElementById("cameraPlaceholder");
+
 const statusEl = document.getElementById("status");
 const dateTimeEl = document.getElementById("dateTime");
 const locationEl = document.getElementById("location");
 
-const startCameraBtn = document.getElementById("startCamera");
-const captureBtn = document.getElementById("capturePhoto");
-const locationBtn = document.getElementById("getLocation");
-const continueBtn = document.getElementById("continueForm");
+const startCameraBtn =
+    document.getElementById("startCamera");
 
-const downloadLink = document.getElementById("downloadPhoto");
+const captureBtn =
+    document.getElementById("capturePhoto");
+
+const locationBtn =
+    document.getElementById("getLocation");
+
+const continueBtn =
+    document.getElementById("continueForm");
+
+const downloadLink =
+    document.getElementById("downloadPhoto");
 
 
 /* 3. VARIABLES */
 
 let cameraStream = null;
+
 let capturedPhoto = false;
 let capturedPhotoData = null;
 
@@ -47,18 +57,15 @@ let capturedAt = null;
 /* 4. STATUS MESSAGE */
 
 function setStatus(message) {
-
     if (statusEl) {
         statusEl.textContent = message;
     }
-
 }
 
 
 /* 5. UPDATE CONTINUE BUTTON */
 
 function updateContinueButton() {
-
     if (!continueBtn) return;
 
     continueBtn.disabled = !(
@@ -66,300 +73,399 @@ function updateContinueButton() {
         gps !== null &&
         capturedAt !== null
     );
-
 }
 
 
-/* 6. START CAMERA */
+/* 6. STOP CAMERA */
 
-startCameraBtn.addEventListener("click", async function () {
-
-    try {
-
-        if (!navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia) {
-
-            throw new Error(
-                "Camera requires HTTPS or localhost."
-            );
-
-        }
-
-        // Stop previous camera if running
-        if (cameraStream) {
-
-            cameraStream.getTracks().forEach(track => track.stop());
-
-        }
-
-        setStatus("Starting camera...");
-
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-
-            video: {
-                facingMode: "user"
-            },
-
-            audio: false
-
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => {
+            track.stop();
         });
 
-        video.srcObject = cameraStream;
+        cameraStream = null;
+    }
 
-        video.hidden = false;
-        preview.hidden = true;
+    if (video) {
+        video.srcObject = null;
+    }
+}
 
-        capturedPhoto = false;
-        capturedPhotoData = null;
-        capturedAt = null;
 
-        dateTimeEl.textContent = "Not captured";
+/* 7. START CAMERA */
 
-        if (downloadLink) {
-            downloadLink.hidden = true;
+if (startCameraBtn) {
+
+    startCameraBtn.addEventListener("click", async function () {
+
+        if (!video || !captureBtn) {
+            setStatus("Camera HTML elements are missing.");
+            return;
         }
 
-        captureBtn.disabled = false;
+        try {
 
-        updateContinueButton();
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+                throw new Error(
+                    "Camera requires HTTPS or localhost."
+                );
+            }
 
-        setStatus("Camera ready. Capture your live photo.");
+            stopCamera();
 
-    }
+            setStatus("Requesting camera permission...");
 
-    catch (error) {
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia({
 
-        setStatus("Camera error: " + error.message);
+                    video: {
+                        facingMode: "user"
+                    },
 
-    }
+                    audio: false
 
-});
+                });
 
+            video.srcObject = cameraStream;
+            video.hidden = false;
 
-/* 7. CAPTURE LIVE PHOTO */
+            if (preview) {
+                preview.hidden = true;
+            }
 
-captureBtn.addEventListener("click", function () {
+            if (cameraPlaceholder) {
+                cameraPlaceholder.hidden = true;
+            }
 
-    if (!cameraStream) {
+            // Wait for the camera preview to start.
+            await video.play();
 
-        setStatus("Please start the camera first.");
+            // Reset previous photo capture.
+            capturedPhoto = false;
+            capturedPhotoData = null;
+            capturedAt = null;
 
-        return;
+            if (dateTimeEl) {
+                dateTimeEl.textContent = "Not captured";
+            }
 
-    }
+            if (downloadLink) {
+                downloadLink.hidden = true;
+            }
 
-    const width = video.videoWidth;
-    const height = video.videoHeight;
-
-    if (!width || !height) {
-
-        setStatus("Camera is not ready. Try again.");
-
-        return;
-
-    }
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const context = canvas.getContext("2d");
-
-    context.drawImage(
-        video,
-        0,
-        0,
-        width,
-        height
-    );
-
-    // Capture photo
-    capturedPhotoData = canvas.toDataURL(
-        "image/jpeg",
-        0.90
-    );
-
-    capturedPhoto = true;
-
-    // Capture date and time
-    capturedAt = new Date();
-
-    dateTimeEl.textContent =
-        capturedAt.toLocaleString();
-
-    // Display captured photo
-    preview.src = capturedPhotoData;
-
-    preview.hidden = false;
-    video.hidden = true;
-
-    // Download photo option
-    if (downloadLink) {
-
-        downloadLink.href = capturedPhotoData;
-
-        downloadLink.download =
-            "SKYRIN_Attendance_Photo.jpg";
-
-        downloadLink.hidden = false;
-
-    }
-
-    // Stop camera after capture
-    cameraStream.getTracks().forEach(track => track.stop());
-
-    cameraStream = null;
-
-    captureBtn.disabled = true;
-
-    updateContinueButton();
-
-    setStatus(
-        "Photo captured successfully. Now capture your GPS location."
-    );
-
-});
-
-
-/* 8. CAPTURE GPS LOCATION */
-
-locationBtn.addEventListener("click", function () {
-
-    if (!navigator.geolocation) {
-
-        setStatus(
-            "GPS location is not supported by your browser."
-        );
-
-        return;
-
-    }
-
-    setStatus("Getting your GPS location...");
-
-    locationBtn.disabled = true;
-
-    navigator.geolocation.getCurrentPosition(
-
-        function (position) {
-
-            gps = {
-
-                latitude: position.coords.latitude,
-
-                longitude: position.coords.longitude,
-
-                accuracy: position.coords.accuracy
-
-            };
-
-            locationEl.textContent =
-                gps.latitude.toFixed(6) +
-                ", " +
-                gps.longitude.toFixed(6) +
-                " (Accuracy: ±" +
-                Math.round(gps.accuracy) +
-                " m)";
-
-            locationBtn.disabled = false;
+            captureBtn.disabled = false;
 
             updateContinueButton();
 
             setStatus(
-                "GPS location captured successfully."
+                "Camera ready. Capture your live photo."
             );
 
-        },
+        } catch (error) {
 
-        function (error) {
+            console.error("Camera error:", error);
 
-            locationBtn.disabled = false;
+            stopCamera();
+
+            if (cameraPlaceholder) {
+                cameraPlaceholder.hidden = false;
+            }
 
             setStatus(
-                "GPS error: " +
-                error.message +
-                ". Please allow location permission."
+                "Camera error: " + error.message
             );
-
-        },
-
-        {
-
-            enableHighAccuracy: true,
-
-            timeout: 15000,
-
-            maximumAge: 0
 
         }
 
-    );
+    });
 
-});
+}
 
 
-/* 9. OPEN GOOGLE FORM */
+/* 8. CAPTURE LIVE PHOTO */
 
-continueBtn.addEventListener("click", function () {
+if (captureBtn) {
 
-    // Check photo
-    if (!capturedPhoto) {
+    captureBtn.addEventListener("click", function () {
 
-        setStatus("Please capture your live photo first.");
+        if (!cameraStream || !video || !canvas) {
 
-        return;
+            setStatus(
+                "Please start the camera first."
+            );
 
-    }
+            return;
 
-    // Check GPS
-    if (!gps) {
+        }
 
-        setStatus("Please capture your GPS location first.");
+        const width = video.videoWidth;
+        const height = video.videoHeight;
 
-        return;
+        if (!width || !height) {
 
-    }
+            setStatus(
+                "Camera is not ready. Please try again."
+            );
 
-    // Check timestamp
-    if (!capturedAt) {
+            return;
 
-        setStatus("Attendance timestamp is missing.");
+        }
 
-        return;
+        // Set canvas dimensions.
+        canvas.width = width;
+        canvas.height = height;
 
-    }
+        const context = canvas.getContext("2d");
 
-    // Validate Google Form URL
-    const formURL = GOOGLE_FORM_URL.trim();
-
-    if (
-        !formURL ||
-        formURL.includes("PASTE_YOUR_ACTUAL_FORM_ID") ||
-        !formURL.startsWith("https://docs.google.com/forms/")
-    ) {
-
-        setStatus(
-            "Google Form link is missing or invalid. Please update GOOGLE_FORM_URL in app.js."
+        // Draw live camera image.
+        context.drawImage(
+            video,
+            0,
+            0,
+            width,
+            height
         );
 
-        return;
+        // Convert captured photo into JPEG.
+        capturedPhotoData = canvas.toDataURL(
+            "image/jpeg",
+            0.90
+        );
 
-    }
+        capturedPhoto = true;
 
-    // Open Google Form in the same tab.
-    // This avoids browser popup blocking.
+        // Capture date and time.
+        capturedAt = new Date();
 
-    setStatus("Opening SKYRIN ENGINEERING attendance form...");
+        if (dateTimeEl) {
+            dateTimeEl.textContent =
+                capturedAt.toLocaleString();
+        }
 
-    window.location.assign(formURL);
+        // Display captured photo.
+        if (preview) {
+            preview.src = capturedPhotoData;
+            preview.hidden = false;
+        }
 
-});
+        video.hidden = true;
+
+        if (cameraPlaceholder) {
+            cameraPlaceholder.hidden = true;
+        }
+
+        // Enable photo download.
+        if (downloadLink) {
+
+            downloadLink.href = capturedPhotoData;
+
+            downloadLink.download =
+                "SKYRIN_Attendance_Photo.jpg";
+
+            downloadLink.hidden = false;
+
+        }
+
+        // Stop camera after capturing.
+        stopCamera();
+
+        captureBtn.disabled = true;
+
+        updateContinueButton();
+
+        setStatus(
+            "Photo captured successfully. Now capture your GPS location."
+        );
+
+    });
+
+}
 
 
-/* 10. INITIAL SETTINGS */
+/* 9. CAPTURE GPS LOCATION */
 
-captureBtn.disabled = true;
+if (locationBtn) {
 
-continueBtn.disabled = true;
+    locationBtn.addEventListener("click", function () {
+
+        if (!navigator.geolocation) {
+
+            setStatus(
+                "GPS location is not supported by your browser."
+            );
+
+            return;
+
+        }
+
+        setStatus("Getting your GPS location...");
+
+        locationBtn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                gps = {
+
+                    latitude: position.coords.latitude,
+
+                    longitude: position.coords.longitude,
+
+                    accuracy: position.coords.accuracy
+
+                };
+
+                if (locationEl) {
+
+                    locationEl.textContent =
+                        gps.latitude.toFixed(6) +
+                        ", " +
+                        gps.longitude.toFixed(6) +
+                        " (Accuracy: ±" +
+                        Math.round(gps.accuracy) +
+                        " m)";
+
+                }
+
+                locationBtn.disabled = false;
+
+                updateContinueButton();
+
+                setStatus(
+                    "GPS location captured successfully."
+                );
+
+            },
+
+            function (error) {
+
+                locationBtn.disabled = false;
+
+                setStatus(
+                    "GPS error: " +
+                    error.message +
+                    ". Please allow location permission."
+                );
+
+            },
+
+            {
+
+                enableHighAccuracy: true,
+
+                timeout: 15000,
+
+                maximumAge: 0
+
+            }
+
+        );
+
+    });
+
+}
+
+
+/* 10. OPEN GOOGLE FORM */
+
+if (continueBtn) {
+
+    continueBtn.addEventListener("click", function () {
+
+        // Validate captured photo.
+        if (!capturedPhoto) {
+
+            setStatus(
+                "Please capture your live photo first."
+            );
+
+            return;
+
+        }
+
+        // Validate GPS.
+        if (!gps) {
+
+            setStatus(
+                "Please capture your GPS location first."
+            );
+
+            return;
+
+        }
+
+        // Validate timestamp.
+        if (!capturedAt) {
+
+            setStatus(
+                "Attendance timestamp is missing."
+            );
+
+            return;
+
+        }
+
+        // Validate Google Form URL.
+        const formURL = GOOGLE_FORM_URL.trim();
+
+        if (
+            !formURL ||
+            !formURL.startsWith(
+                "https://docs.google.com/forms/"
+            ) ||
+            !formURL.includes("/viewform")
+        ) {
+
+            setStatus(
+                "Google Form link is missing or invalid. Please check app.js."
+            );
+
+            return;
+
+        }
+
+        setStatus(
+            "Opening SKYRIN ENGINEERING attendance form..."
+        );
+
+        // Open Google Form in the same browser tab.
+        window.location.assign(formURL);
+
+    });
+
+}
+
+
+/* 11. INITIAL SETTINGS */
+
+if (captureBtn) {
+    captureBtn.disabled = true;
+}
+
+if (continueBtn) {
+    continueBtn.disabled = true;
+}
+
+if (video) {
+    video.hidden = true;
+}
+
+if (preview) {
+    preview.hidden = true;
+}
+
+if (downloadLink) {
+    downloadLink.hidden = true;
+}
+
+if (cameraPlaceholder) {
+    cameraPlaceholder.hidden = false;
+}
 
 setStatus(
     "Welcome to SKYRIN ENGINEERING Attendance Management."
