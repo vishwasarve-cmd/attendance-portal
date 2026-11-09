@@ -1,19 +1,27 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SKYRIN ENGINEERING | Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>SKYRIN ENGINEERING | Attendance Manager</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body class="splash-active">
 
-    <!-- SKYRIN ENGINEERING INTRO -->
+    <!-- =====================================
+         SKYRIN ENGINEERING INTRO SCREEN
+    ====================================== -->
+
     <div id="introScreen" class="intro-screen">
+
         <div class="intro-content">
+
             <div class="intro-mark">S</div>
 
             <p class="intro-kicker">WELCOME TO</p>
@@ -30,85 +38,251 @@
             <div class="intro-loader">
                 <span></span>
             </div>
+
         </div>
+
     </div>
 
-    <!-- MAIN ATTENDANCE WEBSITE -->
-    <main class="card">
 
-        <h1>Attendance</h1>
+    <!-- =====================================
+         MAIN ATTENDANCE WEBSITE
+    ====================================== -->
 
-        <p class="muted">
-            Capture your photo and location, then continue to the attendance form.
-        </p>
+    <main class="card" id="attendanceApp">
 
-        <label for="attendanceType">Attendance type</label>
+        <header class="page-header">
 
-        <select id="attendanceType">
-            <option value="IN">IN time</option>
-            <option value="OUT">OUT time</option>
-        </select>
+            <div class="brand-mark">S</div>
 
-        <section class="details">
-            <p>
-                <strong>Date &amp; time:</strong>
-                <span id="dateTime">Not captured</span>
-            </p>
+            <div>
+                <h1>SKYRIN ENGINEERING</h1>
+                <p class="muted">Attendance Management System</p>
+            </div>
 
-            <p>
-                <strong>GPS location:</strong>
-                <span id="location">Not captured</span>
-            </p>
+        </header>
+
+
+        <div class="section-heading">
+
+            <span class="live-indicator"></span>
+
+            <span>EMPLOYEE ATTENDANCE</span>
+
+        </div>
+
+
+        <!-- ATTENDANCE TYPE -->
+
+        <div class="form-group">
+
+            <label for="attendanceType">
+                Attendance Type
+            </label>
+
+            <select id="attendanceType">
+
+                <option value="IN">IN Time</option>
+
+                <option value="OUT">OUT Time</option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DATE AND TIME -->
+
+        <div class="details">
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Date &amp; Time
+                </span>
+
+                <span id="dateTime">
+                    Not captured
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    GPS Location
+                </span>
+
+                <span id="location">
+                    Not captured
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- CAMERA SECTION -->
+
+        <section class="camera-section">
+
+            <div class="camera-heading">
+
+                <h2>Live Photo Capture</h2>
+
+                <p>
+                    Capture your photo for attendance verification.
+                </p>
+
+            </div>
+
+
+            <div class="camera-wrap">
+
+                <video
+                    id="camera"
+                    autoplay
+                    playsinline
+                    muted
+                    hidden>
+                </video>
+
+
+                <canvas
+                    id="canvas"
+                    hidden>
+                </canvas>
+
+
+                <img
+                    id="photoPreview"
+                    alt="Captured attendance photo"
+                    hidden>
+
+
+                <div class="camera-placeholder" id="cameraPlaceholder">
+
+                    <div class="camera-icon">📷</div>
+
+                    <p>Camera preview will appear here</p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CAMERA BUTTONS -->
+
+            <div class="actions">
+
+                <button
+                    id="startCamera"
+                    type="button">
+
+                    Start Camera
+
+                </button>
+
+
+                <button
+                    id="capturePhoto"
+                    type="button"
+                    disabled>
+
+                    Capture Photo
+
+                </button>
+
+            </div>
+
         </section>
 
-        <div class="camera-wrap">
-            <video id="camera" autoplay playsinline muted></video>
 
-            <canvas id="canvas" hidden></canvas>
+        <!-- GPS SECTION -->
 
-            <img
-                id="photoPreview"
-                alt="Captured attendance photo"
-                hidden
-            >
+        <section class="location-section">
+
+            <button
+                id="getLocation"
+                type="button">
+
+                Get GPS Location
+
+            </button>
+
+        </section>
+
+
+        <!-- STATUS MESSAGE -->
+
+        <div
+            id="status"
+            class="status-box"
+            role="status"
+            aria-live="polite">
+
+            Welcome to SKYRIN ENGINEERING.
+
         </div>
 
-        <div class="actions">
-            <button id="startCamera" type="button">
-                Start camera
-            </button>
 
-            <button id="capturePhoto" type="button" disabled>
-                Take live photo
-            </button>
+        <!-- GOOGLE FORM BUTTON -->
 
-            <button id="getLocation" type="button">
-                Get GPS location
-            </button>
-        </div>
+        <button
+            id="continueForm"
+            class="primary"
+            type="button"
+            disabled>
 
-        <p id="status" class="status" aria-live="polite"></p>
+            Continue to Google Form →
 
-        <button id="continueForm" class="primary" type="button" disabled>
-            Continue to Google Form
         </button>
 
+
+        <!-- PHOTO DOWNLOAD -->
+
+        <a
+            id="downloadPhoto"
+            hidden
+            download="SKYRIN_Attendance_Photo.jpg">
+
+            Download Captured Photo
+
+        </a>
+
+
         <p class="hint">
-            After the form opens, upload the downloaded photo if your
-            Google Form has a File upload question.
+
+            Ensure your photo and GPS location are captured before
+            proceeding to the Google Form.
+
         </p>
 
-        <a id="downloadPhoto" hidden download="attendance-photo.jpg">
-            Download captured photo
-        </a>
+
+        <footer class="footer">
+
+            <p>© SKYRIN ENGINEERING</p>
+
+            <span>Smart Attendance Management</span>
+
+        </footer>
 
     </main>
 
-    <!-- JAVASCRIPT -->
+
+    <!-- =====================================
+         JAVASCRIPT FILE
+    ====================================== -->
+
     <script src="{{ url_for('static', filename='app.js') }}"></script>
 
-    <!-- 3 SECOND INTRO TIMER -->
+
+    <!-- =====================================
+         THREE SECOND INTRO TIMER
+    ====================================== -->
+
     <script>
+
         document.addEventListener("DOMContentLoaded", function () {
 
             const intro = document.getElementById("introScreen");
@@ -117,19 +291,24 @@
 
             setTimeout(function () {
 
-                document.body.classList.remove("splash-active");
-
                 intro.classList.add("intro-hidden");
 
+                document.body.classList.remove("splash-active");
+
                 setTimeout(function () {
+
                     intro.remove();
+
                 }, 750);
 
             }, 3000);
 
         });
+
     </script>
 
 </body>
+
 </html>
+
 
