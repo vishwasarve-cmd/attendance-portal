@@ -1,51 +1,170 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Attendance Check-in</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Skyrin Engineering | Attendance Manager</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-  <main class="card">
-    <h1>Attendance</h1>
-    <p class="muted">Capture your photo and location, then continue to the attendance form.</p>
 
-    <label for="attendanceType">Attendance type</label>
-    <select id="attendanceType">
-      <option value="IN">IN time</option>
-      <option value="OUT">OUT time</option>
-    </select>
+    <main class="main-container">
 
-    <section class="details">
-      <p><strong>Date &amp; time:</strong> <span id="dateTime">Not captured</span></p>
-      <p><strong>GPS location:</strong> <span id="location">Not captured</span></p>
-    </section>
+        <div class="card">
 
-    <div class="camera-wrap">
-      <video id="camera" autoplay playsinline muted></video>
-      <canvas id="canvas" hidden></canvas>
-      <img id="photoPreview" alt="Captured attendance photo" hidden>
-    </div>
+            <!-- Company Header -->
+            <header class="brand-header">
+                <div class="brand-icon">SE</div>
 
-    <div class="actions">
-      <button id="startCamera" type="button">Start camera</button>
-      <button id="capturePhoto" type="button" disabled>Take live photo</button>
-      <button id="getLocation" type="button">Get GPS location</button>
-    </div>
+                <div class="brand-info">
+                    <h1>SKYRIN ENGINEERING</h1>
+                    <p>Workforce Attendance Management</p>
+                </div>
 
-    <p id="status" class="status" aria-live="polite"></p>
+                <span class="live-badge">
+                    <span class="live-dot"></span>
+                    LIVE
+                </span>
+            </header>
 
-    <button id="continueForm" class="primary" type="button" disabled>
-      Continue to Google Form
-    </button>
-    <p class="hint">
-      After the form opens, upload the downloaded photo if your Google Form has a
-      File upload question. The photo cannot be silently attached to a Google Form
-      using a normal pre-filled form link.
-    </p>
-    <a id="downloadPhoto" hidden download="attendance-photo.jpg">Download captured photo</a>
-  </main>
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
+            <div class="section-divider"></div>
+
+            <!-- Page Heading -->
+            <section class="page-heading">
+                <span class="eyebrow">EMPLOYEE PORTAL</span>
+                <h2>Attendance Check-in</h2>
+                <p>
+                    Record your attendance securely using live photo
+                    verification and GPS location.
+                </p>
+            </section>
+
+            <!-- Attendance Selection -->
+            <div class="form-section">
+                <label for="attendanceType">Attendance Type</label>
+
+                <select id="attendanceType">
+                    <option value="IN">IN - Check In</option>
+                    <option value="OUT">OUT - Check Out</option>
+                </select>
+            </div>
+
+            <!-- Attendance Details -->
+            <section class="details">
+
+                <div class="detail-item">
+                    <span class="detail-icon">◷</span>
+                    <div>
+                        <span class="detail-label">Date & Time</span>
+                        <p id="dateTime">Not captured</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-icon">⌖</span>
+                    <div>
+                        <span class="detail-label">GPS Location</span>
+                        <p id="location">Not captured</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Camera Section -->
+            <section class="camera-section">
+
+                <div class="camera-heading">
+                    <h3>Live Photo Verification</h3>
+                    <span class="camera-tag">CAMERA</span>
+                </div>
+
+                <div class="camera-wrap">
+
+                    <video id="camera"
+                           autoplay
+                           playsinline
+                           muted></video>
+
+                    <canvas id="canvas" hidden></canvas>
+
+                    <img id="photoPreview"
+                         alt="Captured attendance photo"
+                         hidden>
+
+                    <div class="camera-placeholder">
+                        <div class="camera-symbol">◎</div>
+                        <p>Camera preview will appear here</p>
+                        <span>Enable camera to continue</span>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button id="startCamera" type="button">
+                        Start Camera
+                    </button>
+
+                    <button id="capturePhoto"
+                            type="button"
+                            disabled>
+                        Capture Photo
+                    </button>
+
+                    <button id="getLocation" type="button">
+                        Get GPS Location
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- Status -->
+            <div class="status-box">
+                <span class="status-indicator"></span>
+                <p id="status" class="status" aria-live="polite">
+                    Ready to record attendance.
+                </p>
+            </div>
+
+            <!-- Continue -->
+            <button id="continueForm"
+                    class="primary"
+                    type="button"
+                    disabled>
+                Continue to Google Form
+                <span>→</span>
+            </button>
+
+            <a id="downloadPhoto"
+               hidden
+               download="attendance-photo.jpg">
+                Download Captured Photo
+            </a>
+
+            <p class="hint">
+                Your attendance details, timestamp and GPS coordinates
+                will be transferred to the attendance form.
+                If photo upload is enabled, download and upload your
+                captured photo manually.
+            </p>
+
+            <!-- Footer -->
+            <footer>
+                <span>SKYRIN ENGINEERING</span>
+                <span>Secure Attendance Portal</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+
 </body>
 </html>
