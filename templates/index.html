@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Attendance Check-in</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="card">
+    <h1>Attendance</h1>
+    <p class="muted">Capture your photo and location, then continue to the attendance form.</p>
+
+    <label for="attendanceType">Attendance type</label>
+    <select id="attendanceType">
+      <option value="IN">IN time</option>
+      <option value="OUT">OUT time</option>
+    </select>
+
+    <section class="details">
+      <p><strong>Date &amp; time:</strong> <span id="dateTime">Not captured</span></p>
+      <p><strong>GPS location:</strong> <span id="location">Not captured</span></p>
+    </section>
+
+    <div class="camera-wrap">
+      <video id="camera" autoplay playsinline muted></video>
+      <canvas id="canvas" hidden></canvas>
+      <img id="photoPreview" alt="Captured attendance photo" hidden>
+    </div>
+
+    <div class="actions">
+      <button id="startCamera" type="button">Start camera</button>
+      <button id="capturePhoto" type="button" disabled>Take live photo</button>
+      <button id="getLocation" type="button">Get GPS location</button>
+    </div>
+
+    <p id="status" class="status" aria-live="polite"></p>
+
+    <button id="continueForm" class="primary" type="button" disabled>
+      Continue to Google Form
+    </button>
+    <p class="hint">
+      After the form opens, upload the downloaded photo if your Google Form has a
+      File upload question. The photo cannot be silently attached to a Google Form
+      using a normal pre-filled form link.
+    </p>
+    <a id="downloadPhoto" hidden download="attendance-photo.jpg">Download captured photo</a>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
