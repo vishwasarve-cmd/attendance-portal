@@ -1,17 +1,19 @@
 
-/* ==========================================
+/* ============================================
    SKYRIN ENGINEERING
    ATTENDANCE MANAGEMENT SYSTEM
-========================================== */
+============================================ */
 
 
-/* 1. GOOGLE FORM CONFIGURATION */
+/* 1. GOOGLE FORM URL */
 
-// Paste your actual Google Form link here.
-// No Entry IDs are required.
+// IMPORTANT:
+// Paste your actual Google Form RESPONDER LINK here.
+// Use the link ending in /viewform.
+// Do not use the Google Form editing link.
 
 const GOOGLE_FORM_URL =
-   https://docs.google.com/forms/d/e/1FAIpQLSc-cfIUEYMQmZn-Eh-Ri-_ZSc3CHdN3ftb-hXa2_n7UTAmybQ/viewform?usp=publish-editor
+    "https://docs.google.com/forms/d/e/1FAIpQLSc-cfIUEYMQmZn-Eh-Ri-_ZSc3CHdN3ftb-hXa2_n7UTAmybQ/viewform?usp=dialog"
 
 
 /* 2. HTML ELEMENTS */
@@ -45,13 +47,19 @@ let capturedAt = null;
 /* 4. STATUS MESSAGE */
 
 function setStatus(message) {
-    statusEl.textContent = message;
+
+    if (statusEl) {
+        statusEl.textContent = message;
+    }
+
 }
 
 
 /* 5. UPDATE CONTINUE BUTTON */
 
 function updateContinueButton() {
+
+    if (!continueBtn) return;
 
     continueBtn.disabled = !(
         capturedPhoto &&
@@ -68,17 +76,19 @@ startCameraBtn.addEventListener("click", async function () {
 
     try {
 
-        // Stop any previously running camera
-        if (cameraStream) {
-            cameraStream.getTracks().forEach(track => track.stop());
-        }
-
         if (!navigator.mediaDevices ||
             !navigator.mediaDevices.getUserMedia) {
 
             throw new Error(
                 "Camera requires HTTPS or localhost."
             );
+
+        }
+
+        // Stop previous camera if running
+        if (cameraStream) {
+
+            cameraStream.getTracks().forEach(track => track.stop());
 
         }
 
@@ -105,7 +115,9 @@ startCameraBtn.addEventListener("click", async function () {
 
         dateTimeEl.textContent = "Not captured";
 
-        downloadLink.hidden = true;
+        if (downloadLink) {
+            downloadLink.hidden = true;
+        }
 
         captureBtn.disabled = false;
 
@@ -117,9 +129,7 @@ startCameraBtn.addEventListener("click", async function () {
 
     catch (error) {
 
-        setStatus(
-            "Camera error: " + error.message
-        );
+        setStatus("Camera error: " + error.message);
 
     }
 
@@ -143,7 +153,7 @@ captureBtn.addEventListener("click", function () {
 
     if (!width || !height) {
 
-        setStatus("Camera is not ready. Please try again.");
+        setStatus("Camera is not ready. Try again.");
 
         return;
 
@@ -162,7 +172,7 @@ captureBtn.addEventListener("click", function () {
         height
     );
 
-    // Store captured photo
+    // Capture photo
     capturedPhotoData = canvas.toDataURL(
         "image/jpeg",
         0.90
@@ -170,24 +180,31 @@ captureBtn.addEventListener("click", function () {
 
     capturedPhoto = true;
 
-    // Record timestamp
+    // Capture date and time
     capturedAt = new Date();
 
     dateTimeEl.textContent =
         capturedAt.toLocaleString();
 
-    // Show photo preview
+    // Display captured photo
     preview.src = capturedPhotoData;
 
     preview.hidden = false;
     video.hidden = true;
 
-    // Provide photo download
-    downloadLink.href = capturedPhotoData;
-    downloadLink.download = "SKYRIN_Attendance_Photo.jpg";
-    downloadLink.hidden = false;
+    // Download photo option
+    if (downloadLink) {
 
-    // Stop camera after capturing
+        downloadLink.href = capturedPhotoData;
+
+        downloadLink.download =
+            "SKYRIN_Attendance_Photo.jpg";
+
+        downloadLink.hidden = false;
+
+    }
+
+    // Stop camera after capture
     cameraStream.getTracks().forEach(track => track.stop());
 
     cameraStream = null;
@@ -203,7 +220,7 @@ captureBtn.addEventListener("click", function () {
 });
 
 
-/* 8. GET GPS LOCATION */
+/* 8. CAPTURE GPS LOCATION */
 
 locationBtn.addEventListener("click", function () {
 
@@ -258,8 +275,9 @@ locationBtn.addEventListener("click", function () {
             locationBtn.disabled = false;
 
             setStatus(
-                "GPS error: " + error.message +
-                ". Please allow location access and try again."
+                "GPS error: " +
+                error.message +
+                ". Please allow location permission."
             );
 
         },
@@ -279,7 +297,7 @@ locationBtn.addEventListener("click", function () {
 });
 
 
-/* 9. CONTINUE TO GOOGLE FORM */
+/* 9. OPEN GOOGLE FORM */
 
 continueBtn.addEventListener("click", function () {
 
@@ -310,25 +328,29 @@ continueBtn.addEventListener("click", function () {
 
     }
 
-    // Check Google Form URL
+    // Validate Google Form URL
+    const formURL = GOOGLE_FORM_URL.trim();
+
     if (
-        !GOOGLE_FORM_URL ||
-        GOOGLE_FORM_URL.includes("YOUR_FORM_ID")
+        !formURL ||
+        formURL.includes("PASTE_YOUR_ACTUAL_FORM_ID") ||
+        !formURL.startsWith("https://docs.google.com/forms/")
     ) {
 
         setStatus(
-            "Please add your actual Google Form URL in app.js."
+            "Google Form link is missing or invalid. Please update GOOGLE_FORM_URL in app.js."
         );
 
         return;
 
     }
 
-    // Open the Google Form directly
-    window.open(
-        GOOGLE_FORM_URL,
-        "_blank"
-    );
+    // Open Google Form in the same tab.
+    // This avoids browser popup blocking.
+
+    setStatus("Opening SKYRIN ENGINEERING attendance form...");
+
+    window.location.assign(formURL);
 
 });
 
@@ -336,9 +358,11 @@ continueBtn.addEventListener("click", function () {
 /* 10. INITIAL SETTINGS */
 
 captureBtn.disabled = true;
+
 continueBtn.disabled = true;
 
 setStatus(
     "Welcome to SKYRIN ENGINEERING Attendance Management."
 );
+
 
