@@ -1,12 +1,11 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SKYRIN ENGINEERING | Attendance Manager</title>
+    <title>SKYRIN ENGINEERING | Attendance</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
@@ -14,301 +13,286 @@
 
 <body class="splash-active">
 
-    <!-- =====================================
-         SKYRIN ENGINEERING INTRO SCREEN
-    ====================================== -->
-
-    <div id="introScreen" class="intro-screen">
-
+    <!-- INTRO SCREEN -->
+    <div class="intro-screen" id="introScreen">
         <div class="intro-content">
+            <div class="intro-logo">SE</div>
 
-            <div class="intro-mark">S</div>
+            <p class="intro-company">SKYRIN ENGINEERING</p>
 
-            <p class="intro-kicker">WELCOME TO</p>
-
-            <h1 class="intro-title">
-                SKYRIN
-                <span>ENGINEERING</span>
-            </h1>
-
-            <p class="intro-subtitle">
-                Smart Attendance Management
-            </p>
+            <h1>Attendance Management</h1>
 
             <div class="intro-loader">
                 <span></span>
             </div>
 
+            <p class="intro-caption">Secure Employee Attendance Portal</p>
         </div>
-
     </div>
 
 
-    <!-- =====================================
-         MAIN ATTENDANCE WEBSITE
-    ====================================== -->
+    <!-- MAIN APPLICATION -->
+    <main class="page-container">
 
-    <main class="card" id="attendanceApp">
+        <section class="card">
 
-        <header class="page-header">
+            <!-- HEADER -->
+            <header class="page-header">
 
-            <div class="brand-mark">S</div>
+                <div class="brand-mark">SE</div>
 
-            <div>
-                <h1>SKYRIN ENGINEERING</h1>
-                <p class="muted">Attendance Management System</p>
-            </div>
+                <div class="brand-details">
+                    <h1>SKYRIN ENGINEERING</h1>
+                    <p>ATTENDANCE MANAGEMENT SYSTEM</p>
+                </div>
 
-        </header>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    LIVE
+                </div>
 
-
-        <div class="section-heading">
-
-            <span class="live-indicator"></span>
-
-            <span>EMPLOYEE ATTENDANCE</span>
-
-        </div>
+            </header>
 
 
-        <!-- ATTENDANCE TYPE -->
-
-        <div class="form-group">
-
-            <label for="attendanceType">
-                Attendance Type
-            </label>
-
-            <select id="attendanceType">
-
-                <option value="IN">IN Time</option>
-
-                <option value="OUT">OUT Time</option>
-
-            </select>
-
-        </div>
-
-
-        <!-- DATE AND TIME -->
-
-        <div class="details">
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Date &amp; Time
-                </span>
-
-                <span id="dateTime">
-                    Not captured
-                </span>
-
+            <div class="welcome-section">
+                <h2>Employee Attendance</h2>
+                <p>Complete your identification and attendance details below.</p>
             </div>
 
 
-            <div class="detail-item">
+            <!-- EMPLOYEE IDENTIFICATION -->
+            <section class="section">
 
-                <span class="detail-label">
-                    GPS Location
-                </span>
+                <div class="section-heading">
+                    <div>
+                        <h3>Employee Identification</h3>
+                        <p>Enter your registered employee details</p>
+                    </div>
 
-                <span id="location">
-                    Not captured
-                </span>
+                    <span class="step-number">01</span>
+                </div>
 
-            </div>
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
 
-        </div>
+                    <input
+                        type="text"
+                        id="employeeId"
+                        placeholder="Example: SKY001"
+                        autocomplete="off"
+                        maxlength="30"
+                        required
+                    >
+                </div>
 
+                <div class="form-group">
+                    <label for="employeeName">Employee Full Name</label>
 
-        <!-- CAMERA SECTION -->
+                    <input
+                        type="text"
+                        id="employeeName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                    >
+                </div>
 
-        <section class="camera-section">
-
-            <div class="camera-heading">
-
-                <h2>Live Photo Capture</h2>
-
-                <p>
-                    Capture your photo for attendance verification.
-                </p>
-
-            </div>
-
-
-            <div class="camera-wrap">
-
-                <video
-                    id="camera"
-                    autoplay
-                    playsinline
-                    muted
-                    hidden>
-                </video>
-
-
-                <canvas
-                    id="canvas"
-                    hidden>
-                </canvas>
+            </section>
 
 
-                <img
-                    id="photoPreview"
-                    alt="Captured attendance photo"
-                    hidden>
+            <!-- ATTENDANCE TYPE -->
+            <section class="section">
 
+                <div class="section-heading">
+                    <div>
+                        <h3>Attendance Type</h3>
+                        <p>Select your attendance activity</p>
+                    </div>
 
-                <div class="camera-placeholder" id="cameraPlaceholder">
+                    <span class="step-number">02</span>
+                </div>
 
-                    <div class="camera-icon">📷</div>
+                <div class="form-group">
 
-                    <p>Camera preview will appear here</p>
+                    <label for="attendanceType">Attendance Status</label>
+
+                    <select id="attendanceType" required>
+                        <option value="">Select attendance type</option>
+                        <option value="IN">IN - Check In</option>
+                        <option value="OUT">OUT - Check Out</option>
+                    </select>
 
                 </div>
 
-            </div>
+            </section>
 
 
-            <!-- CAMERA BUTTONS -->
+            <!-- LIVE PHOTO -->
+            <section class="section">
 
-            <div class="actions">
+                <div class="section-heading">
+                    <div>
+                        <h3>Live Photo Verification</h3>
+                        <p>Capture your current photograph</p>
+                    </div>
+
+                    <span class="step-number">03</span>
+                </div>
+
+                <div class="camera-container">
+
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <div class="camera-placeholder-icon">📷</div>
+                        <h4>Camera Preview</h4>
+                        <p>Your live camera preview will appear here</p>
+                    </div>
+
+                    <video
+                        id="camera"
+                        autoplay
+                        playsinline
+                        muted
+                        hidden
+                    ></video>
+
+                    <img
+                        id="photoPreview"
+                        alt="Captured attendance photo"
+                        hidden
+                    >
+
+                </div>
+
+                <canvas id="canvas" hidden></canvas>
+
+                <div class="camera-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="startCamera"
+                    >
+                        <span>📷</span>
+                        Start Camera
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="capturePhoto"
+                        disabled
+                    >
+                        Capture Photo
+                    </button>
+
+                </div>
+
+                <a
+                    href="#"
+                    id="downloadPhoto"
+                    class="download-link"
+                    hidden
+                >
+                    Download Captured Photo
+                </a>
+
+            </section>
+
+
+            <!-- GPS LOCATION -->
+            <section class="section">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Location Verification</h3>
+                        <p>Capture your current GPS coordinates</p>
+                    </div>
+
+                    <span class="step-number">04</span>
+                </div>
+
+                <div class="location-card">
+
+                    <div class="location-icon">📍</div>
+
+                    <div class="location-information">
+                        <h4>Current Location</h4>
+
+                        <p id="location">
+                            Location not captured yet
+                        </p>
+                    </div>
+
+                </div>
 
                 <button
-                    id="startCamera"
-                    type="button">
-
-                    Start Camera
-
-                </button>
-
-
-                <button
-                    id="capturePhoto"
                     type="button"
-                    disabled>
-
-                    Capture Photo
-
+                    class="btn btn-secondary location-button"
+                    id="getLocation"
+                >
+                    Get My Location
                 </button>
 
+            </section>
+
+
+            <!-- ATTENDANCE TIMESTAMP -->
+            <section class="section">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Attendance Timestamp</h3>
+                        <p>Time recorded when the photo is captured</p>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+
+                    <div class="detail-icon">🕒</div>
+
+                    <div>
+                        <span class="detail-label">Capture Date & Time</span>
+                        <p id="dateTime">Not captured</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- STATUS MESSAGE -->
+            <div class="status-box" id="status" role="status" aria-live="polite">
+                Welcome to SKYRIN ENGINEERING Attendance Management.
             </div>
 
-        </section>
 
-
-        <!-- GPS SECTION -->
-
-        <section class="location-section">
-
+            <!-- CONTINUE -->
             <button
-                id="getLocation"
-                type="button">
-
-                Get GPS Location
-
+                type="button"
+                class="btn btn-submit"
+                id="continueForm"
+                disabled
+            >
+                Continue to Attendance Form
+                <span>→</span>
             </button>
 
+
+            <footer class="page-footer">
+                <p>SKYRIN ENGINEERING</p>
+                <span>Employee Attendance Portal</span>
+            </footer>
+
         </section>
-
-
-        <!-- STATUS MESSAGE -->
-
-        <div
-            id="status"
-            class="status-box"
-            role="status"
-            aria-live="polite">
-
-            Welcome to SKYRIN ENGINEERING.
-
-        </div>
-
-
-        <!-- GOOGLE FORM BUTTON -->
-
-        <button
-            id="continueForm"
-            class="primary"
-            type="button"
-            disabled>
-
-            Continue to Google Form →
-
-        </button>
-
-
-        <!-- PHOTO DOWNLOAD -->
-
-        <a
-            id="downloadPhoto"
-            hidden
-            download="SKYRIN_Attendance_Photo.jpg">
-
-            Download Captured Photo
-
-        </a>
-
-
-        <p class="hint">
-
-            Ensure your photo and GPS location are captured before
-            proceeding to the Google Form.
-
-        </p>
-
-
-        <footer class="footer">
-
-            <p>© SKYRIN ENGINEERING</p>
-
-            <span>Smart Attendance Management</span>
-
-        </footer>
 
     </main>
 
 
-    <!-- =====================================
-         JAVASCRIPT FILE
-    ====================================== -->
-
     <script src="{{ url_for('static', filename='app.js') }}"></script>
 
-
-    <!-- =====================================
-         THREE SECOND INTRO TIMER
-    ====================================== -->
-
-    <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-
-            const intro = document.getElementById("introScreen");
-
-            if (!intro) return;
-
-            setTimeout(function () {
-
-                intro.classList.add("intro-hidden");
-
-                document.body.classList.remove("splash-active");
-
-                setTimeout(function () {
-
-                    intro.remove();
-
-                }, 750);
-
-            }, 3000);
-
-        });
-
-    </script>
-
 </body>
-
 </html>
+
 
 
