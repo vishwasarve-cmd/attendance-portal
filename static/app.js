@@ -5,10 +5,7 @@
 ============================================ */
 
 
-/* 1. GOOGLE FORM URL */
-
-// Use your actual Google Form responder link.
-// Keep the URL inside quotation marks.
+/* 1. GOOGLE FORM CONFIGURATION */
 
 const GOOGLE_FORM_URL =
     "https://docs.google.com/forms/d/e/1FAIpQLSc-cfIUEYMQmZn-Eh-Ri-_ZSc3CHdN3ftb-hXa2_n7UTAmybQ/viewform?usp=dialog";
@@ -16,34 +13,37 @@ const GOOGLE_FORM_URL =
 
 /* 2. HTML ELEMENTS */
 
+// Employee identification
+const employeeIdEl = document.getElementById("employeeId");
+const employeeNameEl = document.getElementById("employeeName");
+
+// Attendance type
+const attendanceTypeEl = document.getElementById("attendanceType");
+
+// Camera elements
 const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
 const preview = document.getElementById("photoPreview");
-
 const cameraPlaceholder =
     document.getElementById("cameraPlaceholder");
 
+// Buttons
+const startCameraBtn = document.getElementById("startCamera");
+const captureBtn = document.getElementById("capturePhoto");
+const locationBtn = document.getElementById("getLocation");
+const continueBtn = document.getElementById("continueForm");
+const downloadLink = document.getElementById("downloadPhoto");
+
+// Information elements
 const statusEl = document.getElementById("status");
 const dateTimeEl = document.getElementById("dateTime");
 const locationEl = document.getElementById("location");
 
-const startCameraBtn =
-    document.getElementById("startCamera");
-
-const captureBtn =
-    document.getElementById("capturePhoto");
-
-const locationBtn =
-    document.getElementById("getLocation");
-
-const continueBtn =
-    document.getElementById("continueForm");
-
-const downloadLink =
-    document.getElementById("downloadPhoto");
+// Intro screen
+const introScreen = document.getElementById("introScreen");
 
 
-/* 3. VARIABLES */
+/* 3. APPLICATION VARIABLES */
 
 let cameraStream = null;
 
@@ -54,71 +54,149 @@ let gps = null;
 let capturedAt = null;
 
 
-/* 4. STATUS MESSAGE */
+/* 4. INTRO SCREEN */
 
-function setStatus(message) {
-    if (statusEl) {
-        statusEl.textContent = message;
-    }
+if (introScreen) {
+
+    setTimeout(function () {
+
+        introScreen.classList.add("intro-hidden");
+
+        document.body.classList.remove("splash-active");
+
+        setTimeout(function () {
+            introScreen.remove();
+        }, 750);
+
+    }, 3000);
+
 }
 
 
-/* 5. UPDATE CONTINUE BUTTON */
+/* 5. STATUS MESSAGE */
+
+function setStatus(message) {
+
+    if (statusEl) {
+        statusEl.textContent = message;
+    }
+
+}
+
+
+/* 6. UPDATE CONTINUE BUTTON */
 
 function updateContinueButton() {
+
     if (!continueBtn) return;
 
+    const employeeId =
+        employeeIdEl ? employeeIdEl.value.trim() : "";
+
+    const employeeName =
+        employeeNameEl ? employeeNameEl.value.trim() : "";
+
+    const attendanceType =
+        attendanceTypeEl ? attendanceTypeEl.value : "";
+
     continueBtn.disabled = !(
+        employeeId.length > 0 &&
+        employeeName.length > 0 &&
+        attendanceType.length > 0 &&
         capturedPhoto &&
         gps !== null &&
         capturedAt !== null
     );
+
 }
 
 
-/* 6. STOP CAMERA */
+/* 7. EMPLOYEE INPUT VALIDATION */
+
+if (employeeIdEl) {
+
+    employeeIdEl.addEventListener(
+        "input",
+        updateContinueButton
+    );
+
+}
+
+if (employeeNameEl) {
+
+    employeeNameEl.addEventListener(
+        "input",
+        updateContinueButton
+    );
+
+}
+
+if (attendanceTypeEl) {
+
+    attendanceTypeEl.addEventListener(
+        "change",
+        updateContinueButton
+    );
+
+}
+
+
+/* 8. STOP CAMERA */
 
 function stopCamera() {
+
     if (cameraStream) {
-        cameraStream.getTracks().forEach(track => {
+
+        cameraStream.getTracks().forEach(function (track) {
             track.stop();
         });
 
         cameraStream = null;
+
     }
 
     if (video) {
         video.srcObject = null;
     }
+
 }
 
 
-/* 7. START CAMERA */
+/* 9. START CAMERA */
 
 if (startCameraBtn) {
 
     startCameraBtn.addEventListener("click", async function () {
 
-        if (!video || !captureBtn) {
-            setStatus("Camera HTML elements are missing.");
+        if (!video || !canvas || !captureBtn) {
+
+            setStatus("Camera elements are missing in the HTML.");
+
             return;
+
         }
 
         try {
 
+            // Check browser camera support.
             if (
                 !navigator.mediaDevices ||
                 !navigator.mediaDevices.getUserMedia
             ) {
+
                 throw new Error(
                     "Camera requires HTTPS or localhost."
                 );
+
             }
 
             stopCamera();
 
+            startCameraBtn.disabled = true;
+
             setStatus("Requesting camera permission...");
 
+            // Request camera permission.
             cameraStream =
                 await navigator.mediaDevices.getUserMedia({
 
@@ -131,6 +209,7 @@ if (startCameraBtn) {
                 });
 
             video.srcObject = cameraStream;
+
             video.hidden = false;
 
             if (preview) {
@@ -141,7 +220,7 @@ if (startCameraBtn) {
                 cameraPlaceholder.hidden = true;
             }
 
-            // Wait for the camera preview to start.
+            // Start video preview.
             await video.play();
 
             // Reset previous photo capture.
@@ -149,8 +228,16 @@ if (startCameraBtn) {
             capturedPhotoData = null;
             capturedAt = null;
 
+            // Require fresh GPS for this new capture.
+            gps = null;
+
             if (dateTimeEl) {
                 dateTimeEl.textContent = "Not captured";
+            }
+
+            if (locationEl) {
+                locationEl.textContent =
+                    "Location not captured yet";
             }
 
             if (downloadLink) {
@@ -179,6 +266,10 @@ if (startCameraBtn) {
                 "Camera error: " + error.message
             );
 
+        } finally {
+
+            startCameraBtn.disabled = false;
+
         }
 
     });
@@ -186,7 +277,7 @@ if (startCameraBtn) {
 }
 
 
-/* 8. CAPTURE LIVE PHOTO */
+/* 10. CAPTURE LIVE PHOTO */
 
 if (captureBtn) {
 
@@ -221,7 +312,15 @@ if (captureBtn) {
 
         const context = canvas.getContext("2d");
 
-        // Draw live camera image.
+        if (!context) {
+
+            setStatus("Unable to capture the photo.");
+
+            return;
+
+        }
+
+        // Draw camera image onto canvas.
         context.drawImage(
             video,
             0,
@@ -230,7 +329,7 @@ if (captureBtn) {
             height
         );
 
-        // Convert captured photo into JPEG.
+        // Convert photo to JPEG.
         capturedPhotoData = canvas.toDataURL(
             "image/jpeg",
             0.90
@@ -238,18 +337,22 @@ if (captureBtn) {
 
         capturedPhoto = true;
 
-        // Capture date and time.
+        // Record capture timestamp.
         capturedAt = new Date();
 
         if (dateTimeEl) {
+
             dateTimeEl.textContent =
                 capturedAt.toLocaleString();
+
         }
 
         // Display captured photo.
         if (preview) {
+
             preview.src = capturedPhotoData;
             preview.hidden = false;
+
         }
 
         video.hidden = true;
@@ -258,7 +361,7 @@ if (captureBtn) {
             cameraPlaceholder.hidden = true;
         }
 
-        // Enable photo download.
+        // Provide photo download.
         if (downloadLink) {
 
             downloadLink.href = capturedPhotoData;
@@ -286,7 +389,7 @@ if (captureBtn) {
 }
 
 
-/* 9. CAPTURE GPS LOCATION */
+/* 11. CAPTURE GPS LOCATION */
 
 if (locationBtn) {
 
@@ -302,9 +405,9 @@ if (locationBtn) {
 
         }
 
-        setStatus("Getting your GPS location...");
-
         locationBtn.disabled = true;
+
+        setStatus("Getting your GPS location...");
 
         navigator.geolocation.getCurrentPosition(
 
@@ -320,6 +423,7 @@ if (locationBtn) {
 
                 };
 
+                // Display coordinates.
                 if (locationEl) {
 
                     locationEl.textContent =
@@ -344,12 +448,16 @@ if (locationBtn) {
 
             function (error) {
 
+                gps = null;
+
                 locationBtn.disabled = false;
+
+                updateContinueButton();
 
                 setStatus(
                     "GPS error: " +
                     error.message +
-                    ". Please allow location permission."
+                    ". Please allow location permission and try again."
                 );
 
             },
@@ -371,13 +479,61 @@ if (locationBtn) {
 }
 
 
-/* 10. OPEN GOOGLE FORM */
+/* 12. OPEN GOOGLE FORM */
 
 if (continueBtn) {
 
     continueBtn.addEventListener("click", function () {
 
-        // Validate captured photo.
+        // Check Employee ID.
+        if (
+            !employeeIdEl ||
+            !employeeIdEl.value.trim()
+        ) {
+
+            setStatus("Please enter your Employee ID.");
+
+            if (employeeIdEl) {
+                employeeIdEl.focus();
+            }
+
+            return;
+
+        }
+
+        // Check Employee Name.
+        if (
+            !employeeNameEl ||
+            !employeeNameEl.value.trim()
+        ) {
+
+            setStatus("Please enter your Employee Name.");
+
+            if (employeeNameEl) {
+                employeeNameEl.focus();
+            }
+
+            return;
+
+        }
+
+        // Check attendance type.
+        if (
+            !attendanceTypeEl ||
+            !attendanceTypeEl.value
+        ) {
+
+            setStatus("Please select IN or OUT attendance.");
+
+            if (attendanceTypeEl) {
+                attendanceTypeEl.focus();
+            }
+
+            return;
+
+        }
+
+        // Check captured photo.
         if (!capturedPhoto) {
 
             setStatus(
@@ -388,7 +544,7 @@ if (continueBtn) {
 
         }
 
-        // Validate GPS.
+        // Check GPS.
         if (!gps) {
 
             setStatus(
@@ -399,7 +555,7 @@ if (continueBtn) {
 
         }
 
-        // Validate timestamp.
+        // Check timestamp.
         if (!capturedAt) {
 
             setStatus(
@@ -414,7 +570,6 @@ if (continueBtn) {
         const formURL = GOOGLE_FORM_URL.trim();
 
         if (
-            !formURL ||
             !formURL.startsWith(
                 "https://docs.google.com/forms/"
             ) ||
@@ -422,7 +577,7 @@ if (continueBtn) {
         ) {
 
             setStatus(
-                "Google Form link is missing or invalid. Please check app.js."
+                "Google Form link is invalid. Please check app.js."
             );
 
             return;
@@ -433,7 +588,9 @@ if (continueBtn) {
             "Opening SKYRIN ENGINEERING attendance form..."
         );
 
-        // Open Google Form in the same browser tab.
+        continueBtn.disabled = true;
+
+        // Open Google Form in the same tab.
         window.location.assign(formURL);
 
     });
@@ -441,7 +598,7 @@ if (continueBtn) {
 }
 
 
-/* 11. INITIAL SETTINGS */
+/* 13. INITIAL SETTINGS */
 
 if (captureBtn) {
     captureBtn.disabled = true;
@@ -467,8 +624,17 @@ if (cameraPlaceholder) {
     cameraPlaceholder.hidden = false;
 }
 
+if (locationEl) {
+    locationEl.textContent = "Location not captured yet";
+}
+
+if (dateTimeEl) {
+    dateTimeEl.textContent = "Not captured";
+}
+
 setStatus(
     "Welcome to SKYRIN ENGINEERING Attendance Management."
 );
 
+updateContinueButton();
 
