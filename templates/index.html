@@ -1,24 +1,207 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SKYRIN ENGINEERING | Attendance</title>
+    <title>SKYRIN ENGINEERING | Attendance Portal</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body class="splash-active">
+<body>
+
+    <!-- =====================================
+         AUTHENTICATION PAGE
+    ====================================== -->
+
+    {% if not session.get('employee_name') %}
+
+    <main class="auth-screen">
+
+        <div class="auth-card">
+
+            <div class="brand-mark auth-logo">SE</div>
+
+            <p class="auth-company">SKYRIN ENGINEERING</p>
+
+            <h1>Employee Portal</h1>
+
+            <p class="auth-subtitle">
+                Secure employee attendance management system.
+                Login to continue to your dashboard.
+            </p>
+
+            <!-- LOGIN / REGISTER TABS -->
+
+            <div class="auth-tabs">
+
+                <button type="button"
+                        id="loginTab"
+                        class="auth-tab active">
+                    Login
+                </button>
+
+                <button type="button"
+                        id="registerTab"
+                        class="auth-tab">
+                    Create Account
+                </button>
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="loginName">Employee Name</label>
+
+                    <input
+                        type="text"
+                        id="loginName"
+                        placeholder="Enter your registered name"
+                        autocomplete="username"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="loginPassword">Password</label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-submit auth-submit">
+
+                    Login to Account
+                    <span>→</span>
+
+                </button>
+
+            </form>
+
+
+            <!-- CREATE ACCOUNT FORM -->
+
+            <form id="registerForm" hidden>
+
+                <div class="form-group">
+
+                    <label for="registerName">Employee Full Name</label>
+
+                    <input
+                        type="text"
+                        id="registerName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="registerPassword">Create Password</label>
+
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        placeholder="Minimum 8 characters"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">Confirm Password</label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-submit auth-submit">
+
+                    Create Account
+                    <span>→</span>
+
+                </button>
+
+            </form>
+
+
+            <!-- AUTHENTICATION STATUS -->
+
+            <div class="auth-status"
+                 id="authStatus"
+                 role="status"
+                 aria-live="polite">
+
+                Welcome to SKYRIN ENGINEERING.
+
+            </div>
+
+
+            <footer class="auth-footer">
+
+                <p>SKYRIN ENGINEERING</p>
+
+                <span>Secure Employee Authentication Portal</span>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+    {% endif %}
+
+
+
+    <!-- =====================================
+         ATTENDANCE DASHBOARD
+    ====================================== -->
+
+    {% if session.get('employee_name') %}
+
 
     <!-- INTRO SCREEN -->
+
     <div class="intro-screen" id="introScreen">
+
         <div class="intro-content">
+
             <div class="intro-logo">SE</div>
 
-            <p class="intro-company">SKYRIN ENGINEERING</p>
+            <p class="intro-company">
+                SKYRIN ENGINEERING
+            </p>
 
             <h1>Attendance Management</h1>
 
@@ -26,53 +209,87 @@
                 <span></span>
             </div>
 
-            <p class="intro-caption">Secure Employee Attendance Portal</p>
+            <p class="intro-caption">
+                Secure Employee Attendance Portal
+            </p>
+
         </div>
+
     </div>
 
 
+
     <!-- MAIN APPLICATION -->
+
     <main class="page-container">
 
         <section class="card">
 
+
             <!-- HEADER -->
+
             <header class="page-header">
 
                 <div class="brand-mark">SE</div>
 
                 <div class="brand-details">
+
                     <h1>SKYRIN ENGINEERING</h1>
+
                     <p>ATTENDANCE MANAGEMENT SYSTEM</p>
+
                 </div>
 
                 <div class="live-indicator">
+
                     <span class="live-dot"></span>
+
                     LIVE
+
                 </div>
 
             </header>
 
 
+
+            <!-- EMPLOYEE WELCOME -->
+
             <div class="welcome-section">
-                <h2>Employee Attendance</h2>
-                <p>Complete your identification and attendance details below.</p>
+
+                <h2>
+                    Welcome, {{ session.get('employee_name') }}!
+                </h2>
+
+                <p>
+                    Complete your attendance verification
+                    using the details below.
+                </p>
+
             </div>
 
 
+
             <!-- EMPLOYEE IDENTIFICATION -->
+
             <section class="section">
 
                 <div class="section-heading">
+
                     <div>
+
                         <h3>Employee Identification</h3>
-                        <p>Enter your registered employee details</p>
+
+                        <p>Your registered employee details</p>
+
                     </div>
 
                     <span class="step-number">01</span>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label for="employeeId">Employee ID</label>
 
                     <input
@@ -83,44 +300,71 @@
                         maxlength="30"
                         required
                     >
+
                 </div>
 
+
                 <div class="form-group">
-                    <label for="employeeName">Employee Full Name</label>
+
+                    <label for="employeeName">
+                        Employee Full Name
+                    </label>
 
                     <input
                         type="text"
                         id="employeeName"
-                        placeholder="Enter your full name"
+                        value="{{ session.get('employee_name', '') }}"
                         autocomplete="name"
                         maxlength="100"
+                        readonly
                         required
                     >
+
                 </div>
 
             </section>
 
 
+
             <!-- ATTENDANCE TYPE -->
+
             <section class="section">
 
                 <div class="section-heading">
+
                     <div>
+
                         <h3>Attendance Type</h3>
+
                         <p>Select your attendance activity</p>
+
                     </div>
 
                     <span class="step-number">02</span>
+
                 </div>
+
 
                 <div class="form-group">
 
-                    <label for="attendanceType">Attendance Status</label>
+                    <label for="attendanceType">
+                        Attendance Status
+                    </label>
 
                     <select id="attendanceType" required>
-                        <option value="">Select attendance type</option>
-                        <option value="IN">IN - Check In</option>
-                        <option value="OUT">OUT - Check Out</option>
+
+                        <option value="">
+                            Select attendance type
+                        </option>
+
+                        <option value="IN">
+                            IN - Check In
+                        </option>
+
+                        <option value="OUT">
+                            OUT - Check Out
+                        </option>
+
                     </select>
 
                 </div>
@@ -128,33 +372,52 @@
             </section>
 
 
-            <!-- LIVE PHOTO -->
+
+            <!-- LIVE PHOTO VERIFICATION -->
+
             <section class="section">
 
                 <div class="section-heading">
+
                     <div>
+
                         <h3>Live Photo Verification</h3>
+
                         <p>Capture your current photograph</p>
+
                     </div>
 
                     <span class="step-number">03</span>
+
                 </div>
+
 
                 <div class="camera-container">
 
-                    <div class="camera-placeholder" id="cameraPlaceholder">
-                        <div class="camera-placeholder-icon">📷</div>
+                    <div class="camera-placeholder"
+                         id="cameraPlaceholder">
+
+                        <div class="camera-placeholder-icon">
+                            📷
+                        </div>
+
                         <h4>Camera Preview</h4>
-                        <p>Your live camera preview will appear here</p>
+
+                        <p>
+                            Your live camera preview will appear here
+                        </p>
+
                     </div>
+
 
                     <video
                         id="camera"
                         autoplay
                         playsinline
                         muted
-                        hidden
-                    ></video>
+                        hidden>
+                    </video>
+
 
                     <img
                         id="photoPreview"
@@ -164,96 +427,135 @@
 
                 </div>
 
+
                 <canvas id="canvas" hidden></canvas>
+
 
                 <div class="camera-actions">
 
                     <button
                         type="button"
                         class="btn btn-secondary"
-                        id="startCamera"
-                    >
-                        <span>📷</span>
-                        Start Camera
+                        id="startCamera">
+
+                        📷 Start Camera
+
                     </button>
+
 
                     <button
                         type="button"
                         class="btn btn-primary"
                         id="capturePhoto"
-                        disabled
-                    >
+                        disabled>
+
                         Capture Photo
+
                     </button>
 
                 </div>
+
 
                 <a
                     href="#"
                     id="downloadPhoto"
                     class="download-link"
-                    hidden
-                >
+                    hidden>
+
                     Download Captured Photo
+
                 </a>
 
             </section>
 
 
+
             <!-- GPS LOCATION -->
+
             <section class="section">
 
                 <div class="section-heading">
+
                     <div>
+
                         <h3>Location Verification</h3>
+
                         <p>Capture your current GPS coordinates</p>
+
                     </div>
 
                     <span class="step-number">04</span>
+
                 </div>
+
 
                 <div class="location-card">
 
-                    <div class="location-icon">📍</div>
+                    <div class="location-icon">
+                        📍
+                    </div>
 
                     <div class="location-information">
+
                         <h4>Current Location</h4>
 
                         <p id="location">
                             Location not captured yet
                         </p>
+
                     </div>
 
                 </div>
 
+
                 <button
                     type="button"
                     class="btn btn-secondary location-button"
-                    id="getLocation"
-                >
+                    id="getLocation">
+
                     Get My Location
+
                 </button>
 
             </section>
 
 
+
             <!-- ATTENDANCE TIMESTAMP -->
+
             <section class="section">
 
                 <div class="section-heading">
+
                     <div>
+
                         <h3>Attendance Timestamp</h3>
-                        <p>Time recorded when the photo is captured</p>
+
+                        <p>
+                            Time recorded when the photo is captured
+                        </p>
+
                     </div>
+
                 </div>
+
 
                 <div class="detail-card">
 
-                    <div class="detail-icon">🕒</div>
+                    <div class="detail-icon">
+                        🕒
+                    </div>
 
                     <div>
-                        <span class="detail-label">Capture Date & Time</span>
-                        <p id="dateTime">Not captured</p>
+
+                        <span class="detail-label">
+                            Capture Date & Time
+                        </span>
+
+                        <p id="dateTime">
+                            Not captured
+                        </p>
+
                     </div>
 
                 </div>
@@ -261,38 +563,74 @@
             </section>
 
 
+
             <!-- STATUS MESSAGE -->
-            <div class="status-box" id="status" role="status" aria-live="polite">
+
+            <div class="status-box"
+                 id="status"
+                 role="status"
+                 aria-live="polite">
+
                 Welcome to SKYRIN ENGINEERING Attendance Management.
+
             </div>
 
 
-            <!-- CONTINUE -->
+
+            <!-- CONTINUE TO GOOGLE FORM -->
+
             <button
                 type="button"
                 class="btn btn-submit"
                 id="continueForm"
-                disabled
-            >
+                disabled>
+
                 Continue to Attendance Form
+
                 <span>→</span>
+
             </button>
 
 
+
+            <!-- LOGOUT -->
+
+            <button
+                type="button"
+                class="btn btn-logout"
+                id="logoutBtn">
+
+                <span>↪</span>
+                Logout from Account
+
+            </button>
+
+
+
+            <!-- FOOTER -->
+
             <footer class="page-footer">
+
                 <p>SKYRIN ENGINEERING</p>
+
                 <span>Employee Attendance Portal</span>
+
             </footer>
+
 
         </section>
 
     </main>
 
+    {% endif %}
+
+
+
+    <!-- JAVASCRIPT -->
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>
 
 </body>
 </html>
-
 
 
